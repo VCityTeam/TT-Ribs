@@ -1,0 +1,4 @@
+venv*
+result_*.ply
+export_to_ply.log
+*.pyc
