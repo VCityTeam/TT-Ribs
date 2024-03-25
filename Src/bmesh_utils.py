@@ -205,18 +205,35 @@ def bmesh_euler_characteristic(src_bmesh):
 
 
 def bmesh_assert_genus_number_boundaries(src_bmesh, genus, num_boundaries, msg):
-    euler_characteristic = bmesh_euler_characteristic(src_bmesh)
+    effective_num_boundaries = bmesh_get_number_of_boundaries(src_bmesh)
+    if effective_num_boundaries != num_boundaries:
+        print(msg)
+        print("Erroneous number of boundaries: ")
+        print(
+            "   Was expecting ", num_boundaries, " but got ", effective_num_boundaries
+        )
+        print("Exiting.")
+        sys.exit(1)
+    effective_euler_characteristic = bmesh_euler_characteristic(src_bmesh)
+    double_effective_genus = 2 - num_boundaries - effective_euler_characteristic
+    if double_effective_genus != 2 * genus:
+        print(msg)
+        print("Erroneous genus: ")
+        print("   Was expecting ", genus, " but got ", double_effective_genus / 2)
+        print("Exiting.")
+        sys.exit(1)
+    # When the genus and the number of boundaries are correct then everything
+    # should be fine. We nevertheless don't take _any_ risk
     expected_characteristic = 2 - 2 * genus - num_boundaries
-    if euler_characteristic == expected_characteristic:
-        # All if fine and we have the expected topology
-        return
-    print(msg)
-    print(
-        "Actual Euler characteristic is ",
-        euler_characteristic,
-        " when it should be ",
-        expected_characteristic,
-        ".",
-    )
-    print("Exiting.")
-    sys.exit(1)
+    if effective_euler_characteristic != expected_characteristic:
+        print(
+            "Actual Euler characteristic is ",
+            effective_euler_characteristic,
+            " when it should be ",
+            expected_characteristic,
+            ".",
+        )
+        print("Exiting.")
+        sys.exit(1)
+    # All if fine and we have the expected topology
+    return
