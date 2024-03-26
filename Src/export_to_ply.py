@@ -1,5 +1,6 @@
 import collections
 import logging
+import argparse
 
 import bpy
 import bmesh
@@ -46,23 +47,21 @@ def identifiable_boundary_indexes(boundaries):
     return result
 
 
-def replicate_to_build_grid(cave, repetition_along_x, repetition_along_y):
+def replicate_to_build_grid(cave, grid_size_x, grid_size_y):
     logger.debug(
         "Number of boundaries prior to replications : "
         + str(len(bmesh_get_boundaries(demote_UI_object_with_mesh_to_bmesh(cave)))),
     )
 
-    if repetition_along_x > 0:
+    if grid_size_x > 1:
         copier_x = cave.modifiers["Array_est-ouest"]
-        copier_x.count = 1 + repetition_along_x
+        copier_x.count = grid_size_x
         # Note: in case debugging might requires a different offset
         # copier_x.constant_offset_displace = mathutils.Vector((75.0, -15.0, -8.0))
         bpy.ops.object.modifier_apply(modifier="Array_est-ouest")
-    if repetition_along_y > 0:
+    if grid_size_y > 1:
         copier_y = cave.modifiers["Array_nord-sud"]
-        copier_y.count = 1 + repetition_along_y
-        # Note: in case debugging might requires a different offset
-        # copier_x.constant_offset_displace = mathutils.Vector((75.0, -15.0, -8.0))
+        copier_y.count = grid_size_y
         bpy.ops.object.modifier_apply(modifier="Array_nord-sud")
 
     logger.debug(
@@ -93,10 +92,47 @@ def replicate_to_build_grid(cave, repetition_along_x, repetition_along_y):
     )
 
 
+def parse_arguments():
+    parser = argparse.ArgumentParser(
+        description="""
+        Generate a triangulation file and the associated point cloud file
+        out of the Blender (manually) defined cave.
+        """,
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+    parser.add_argument(
+        "-v", "--verbose", action="store_true", help="Toggle verbose printing"
+    )
+    parser.add_argument(
+        "--subdivision",
+        help="Number of Catmull subdivisions that should be applied:"
+        " 1 for a bare triangulation, for 5 expect a 450M resulting file",
+        default=1,
+        type=int,
+    )
+    parser.add_argument(
+        "--grid_size_x",
+        help="Size of the (sub)cave grid along the first axis",
+        default=1,
+        type=int,
+    )
+    parser.add_argument(
+        "--grid_size_y",
+        help="Size of the (sub)cave grid along the second axis",
+        default=1,
+        type=int,
+    )
+    args = parser.parse_args()
+    if args.verbose:
+        parser.print_help()
+        print("Parsed arguments: ")
+        for arg in vars(args):
+            print("   ", arg, ": ", getattr(args, arg))
+    return args
+
+
 def main():
-    prescribed_subdivision_level = 4
-    repetition_along_x = 2
-    repetition_along_y = 2
+    args = parse_arguments()
 
     bpy.ops.wm.open_mainfile(filepath="../Blender/Cave_V5_ready_toscript.blend")
 
@@ -112,42 +148,52 @@ def main():
     ):
 
         subdiv = cave.modifiers["Subdivision"]
-        subdiv.levels = prescribed_subdivision_level
+        subdiv.levels = args.subdivision
         bpy.ops.object.modifier_apply(modifier="Subdivision")
-
         bpy.ops.object.modifier_apply(modifier="Displace.ground")
         bpy.ops.object.modifier_apply(modifier="Displace.walls")
-
         bpy.ops.object.modifier_apply(modifier="Displace_structure")
 
-        # Note: baking _must_ occur after any modifier that acts on the vertices of
-        # the mesh. If, for examples, baking is applied before subdivision, then the
-        # resulting vertices color will be sub-sampled (aligned with the density of
-        # vertices of the original mesh and not the final density resulting from the
-        # application of the "Subdivision" modifier).
+        # Note: baking _must_ occur after any modifier that acts on the vertices
+        # of the mesh. If, for examples, baking were to be applied before
+        # the "Subdivision" modifier, then the resulting vertices color would be
+        # sub-sampled (because it would be aligned with the density of
+        # vertices of the original mesh and not the final density resulting
+        # from the application of the "Subdivision" modifier).
         bpy.ops.object.bake(type="COMBINED")
 
         # When required proceed with the grid replication of the basic block
-        if repetition_along_x or repetition_along_y:
-            replicate_to_build_grid(cave, repetition_along_x, repetition_along_y)
+        if args.grid_size_x > 1 or args.grid_size_y > 1:
+            replicate_to_build_grid(cave, args.grid_size_x, args.grid_size_y)
 
-    # Eventually, assert that the topology of the resulting geometry
+    resulting_bmesh = demote_UI_object_with_mesh_to_bmesh(cave)
+    #### Eventually, assert that the topology of the resulting geometry
+    # Concerning the expected genus:
+    # the basic building block (the cave) genus is five. We build
+    # a regular grid out of such an elementary building block:
+    expected_genus = 5 * args.grid_size_x * args.grid_size_y
+    # But when building a true grid (when there is replication in bother
+    # directions) the gridification has a genus enhancing topological effect:
+    expected_genus += (args.grid_size_x - 1) * (args.grid_size_y - 1)
+    # Concerning the expected number of boundaries:
+    # First let us notice that they are no boundaries internal to the
+    # grid. Then let us notive that there is a boundary per elementary (cave)
+    # block side sitting on the perimeter of the grid. Eventually, this is
+    # equivalent to twice half of the perimeter:
+    expected_boundary_number = 2 * (args.grid_size_x + args.grid_size_y)
     bmesh_assert_genus_number_boundaries(
-        demote_UI_object_with_mesh_to_bmesh(cave),
-        # Genus: the basic building block (the cave) genus is five. We build
-        # a regular grid out of such an elementary building block. But in this
-        # process (only when this is a true grid that is when there is
-        # replication in bother directions, the gridification has a genus
-        # enhancing topological effect:
-        5 * (repetition_along_x + 1) * (repetition_along_y + 1)
-        + repetition_along_x * repetition_along_y,  # grid effect term
-        # Number of boundaries: they are no boundaries internal to the
-        # grid. There is one boundary per elementary block side sitting
-        # on the perimeter on the grid. Eventually, this is equivalent to
-        # twice half of the perimeter.
-        2 * (repetition_along_x + 1 + repetition_along_y + 1),
+        resulting_bmesh,
+        expected_genus,
+        expected_boundary_number,
         "The topology of the cave is wrong.",
     )
+    if args.verbose:
+        print("Resulting triangulation characteristics:")
+        print("   Genus: ", expected_genus)
+        print("   Number of boundaries:", expected_boundary_number)
+        print("   Number of verticies: ", len(resulting_bmesh.verts))
+        print("   Number of edges: ", len(resulting_bmesh.edges))
+        print("   Number of faces: ", len(resulting_bmesh.faces))
 
     ####### When the UI is on (that is when is script is invocated with
     # "blender --python export_to_ply.py") then the following ply_export() will
@@ -163,11 +209,11 @@ def main():
     # The source of this error is probably that objects should be selected ?!?!
     bpy.ops.wm.ply_export(
         filepath="result_sub_"
-        + str(prescribed_subdivision_level)
-        + "_rep_x_"
-        + str(repetition_along_x)
-        + "_rep_y_"
-        + str(repetition_along_y)
+        + str(args.subdivision)
+        + "_grid_size_x_"
+        + str(args.grid_size_x)
+        + "_grid_size_y_"
+        + str(args.grid_size_y)
         + ".ply",
         check_existing=True,
         forward_axis="Y",
