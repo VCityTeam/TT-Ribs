@@ -138,6 +138,7 @@ def main():
 
     cave = bpy.data.objects["Cave"]
 
+    ##### Parametrize the modifiers and apply them
     # The application of the modifiers is done through UI methods (prefixed
     # with "bpy.ops" as opposed to methods encountered in the bmesh module
     # that is prefixed with "bmesh."). Such methods apply on the objects
@@ -166,8 +167,8 @@ def main():
         if args.grid_size_x > 1 or args.grid_size_y > 1:
             replicate_to_build_grid(cave, args.grid_size_x, args.grid_size_y)
 
+    #### Assert the topology of the resulting geometry
     resulting_bmesh = demote_UI_object_with_mesh_to_bmesh(cave)
-    #### Eventually, assert that the topology of the resulting geometry
     # Concerning the expected genus:
     # the basic building block (the cave) genus is five. We build
     # a regular grid out of such an elementary building block:
@@ -195,11 +196,20 @@ def main():
         print("   Number of edges: ", len(resulting_bmesh.edges))
         print("   Number of faces: ", len(resulting_bmesh.faces))
 
-    ####### When the UI is on (that is when is script is invocated with
+    ### Write the resulting files: start with the triangulation
+    triangulation_filename = (
+        "cave_sub_"
+        + str(args.subdivision)
+        + "_grid_size_x_"
+        + str(args.grid_size_x)
+        + "_grid_size_y_"
+        + str(args.grid_size_y)
+        + "_triangulation.ply"
+    )
+    # Debug note: when the UI is on (that is when is script is invocated with
     # "blender --python export_to_ply.py") then the following ply_export() will
     # trigger the following runtime error:
     #    Operator bpy.ops.wm.ply_export.poll() failed, context is incorrect
-    #
     # Note that trying to use
     #    bpy.context.view_layer.objects.active = cave
     #    cave.select_set(True)
@@ -208,13 +218,7 @@ def main():
     # won't help.
     # The source of this error is probably that objects should be selected ?!?!
     bpy.ops.wm.ply_export(
-        filepath="result_sub_"
-        + str(args.subdivision)
-        + "_grid_size_x_"
-        + str(args.grid_size_x)
-        + "_grid_size_y_"
-        + str(args.grid_size_y)
-        + ".ply",
+        filepath=triangulation_filename,
         check_existing=True,
         forward_axis="Y",
         up_axis="Z",
@@ -228,6 +232,45 @@ def main():
         ascii_format=True,
         filter_glob="*.ply",
     )
+
+    ##### Proceed with writing just the point cloud (that is remove the faces
+    # from the previous PLY file).
+    # Extract from header the number of vertex lines to copy:
+    number_of_vertex_lines = 0
+    try:
+        for line in open(triangulation_filename):
+            if "element vertex " in line:
+                number_of_vertex_lines = int(line.replace("element vertex ", ""))
+                raise StopIteration
+    except:
+        if args.verbose:
+            print(number_of_vertex_lines, "vertices must be copie to point cloud file.")
+
+    # Proceed with the copy the triangulation file
+    point_cloud_filename = triangulation_filename.replace(
+        "_triangulation", "_point_cloud"
+    )
+    with open(point_cloud_filename, "w") as point_cloud_file:
+        try:
+            done_with_header = False
+            for line in open(triangulation_filename):
+                if not done_with_header:
+                    # Drop the references to existing faces from the header
+                    if "element face " in line:
+                        continue
+                    if "property list uchar uint vertex_indices" in line:
+                        continue
+                    if "end_header" in line:
+                        done_with_header = True
+                else:
+                    # We know how many vertex lines we need to copy prior to exiting.
+                    if not number_of_vertex_lines:
+                        raise StopIteration
+                    number_of_vertex_lines -= 1
+                point_cloud_file.write(line)
+        except:
+            if args.verbose:
+                print("Point cloud file ", point_cloud_filename, " written.")
 
 
 if __name__ == "__main__":
