@@ -16,7 +16,7 @@
 ---
 A Blender based generator of tunnel systems and cave triangulations and point clouds  
 
-Ribs is a mock up name for Lyon fish-bones.
+Ribs is a mock up name for [Lyon fish-bones](./Doc/Lyon_Fish_Bones).
 
 <img src="Doc/ScreenShots/cave_sub_4_grid_size_x_1_grid_size_y_1_triangulation_-_global_view_point_love_.png" alt="drawing" width="800"/>
 
