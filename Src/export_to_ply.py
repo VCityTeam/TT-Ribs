@@ -207,12 +207,7 @@ def main():
         "The topology of the cave is wrong.",
     )
     if args.verbose:
-        print("Resulting triangulation characteristics:")
-        print("   Genus: ", expected_genus)
-        print("   Number of boundaries:", expected_boundary_number)
-        print("   Number of verticies: ", len(resulting_bmesh.verts))
-        print("   Number of edges: ", len(resulting_bmesh.edges))
-        print("   Number of faces: ", len(resulting_bmesh.faces))
+        bpyhelpers.bmesh_print_topological_characteristics(resulting_bmesh)
 
     ### Write the resulting files: start with the triangulation
     triangulation_filename = (
