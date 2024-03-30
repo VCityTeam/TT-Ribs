@@ -1,22 +1,11 @@
+import sys
 import collections
 import logging
 import argparse
-
 import bpy
 import bmesh
+import bpyhelpers
 import mathutils
-
-### When running within the UI context the "blender --python [...]" invocation
-# does some tricks that prevents folder relative file importation e.g.
-#     from bmesh_utils import ...
-# Repeating local directory path is then mandatory
-import sys, os
-
-sys.path.append(os.path.dirname(__file__))
-
-from bmesh_utils import bmesh_get_boundaries, bmesh_assert_genus_number_boundaries
-from UI_utils import demote_UI_object_with_mesh_to_bmesh
-
 
 ########### Globals
 logger = logging.getLogger(__name__)
@@ -24,6 +13,7 @@ logging.basicConfig(filename="export_to_ply.log", encoding="utf-8", level=loggin
 IDENTIFICATION_THRESHOLD = 5.1  # Totally empirical and ad-hoc to this Cave
 
 
+##########
 def identifiable_boundary_indexes(boundaries):
     # Return (a list of) pairs of boundaries that are considered close enough to
     # be identifiable. Each boundary is first identified with the barycenter its
@@ -50,7 +40,13 @@ def identifiable_boundary_indexes(boundaries):
 def replicate_to_build_grid(cave, grid_size_x, grid_size_y):
     logger.debug(
         "Number of boundaries prior to replications : "
-        + str(len(bmesh_get_boundaries(demote_UI_object_with_mesh_to_bmesh(cave)))),
+        + str(
+            len(
+                bpyhelpers.bmesh_get_boundaries(
+                    bpyhelpers.UI_demote_UI_object_with_mesh_to_bmesh(cave)
+                )
+            )
+        ),
     )
 
     if grid_size_x > 1:
@@ -66,11 +62,17 @@ def replicate_to_build_grid(cave, grid_size_x, grid_size_y):
 
     logger.debug(
         "Number of boundaries AFTER repetitions (but before bridging): "
-        + str(len(bmesh_get_boundaries(demote_UI_object_with_mesh_to_bmesh(cave)))),
+        + str(
+            len(
+                bpyhelpers.bmesh_get_boundaries(
+                    bpyhelpers.UI_demote_UI_object_with_mesh_to_bmesh(cave)
+                )
+            )
+        ),
     )
 
-    cave_bmesh = demote_UI_object_with_mesh_to_bmesh(cave)
-    boundaries = bmesh_get_boundaries(cave_bmesh)
+    cave_bmesh = bpyhelpers.UI_demote_UI_object_with_mesh_to_bmesh(cave)
+    boundaries = bpyhelpers.bmesh_get_boundaries(cave_bmesh)
     to_identify = identifiable_boundary_indexes(boundaries)
     logger.debug(
         "Number of boundary identifications to be realized " + str(len(to_identify))
@@ -88,7 +90,13 @@ def replicate_to_build_grid(cave, grid_size_x, grid_size_y):
     cave_bmesh.to_mesh(cave.data)
     logger.debug(
         "Number of boundaries AFTER BRIDGING: "
-        + str(len(bmesh_get_boundaries(demote_UI_object_with_mesh_to_bmesh(cave))))
+        + str(
+            len(
+                bpyhelpers.bmesh_get_boundaries(
+                    bpyhelpers.UI_demote_UI_object_with_mesh_to_bmesh(cave)
+                )
+            )
+        )
     )
 
 
@@ -122,7 +130,17 @@ def parse_arguments():
         default=1,
         type=int,
     )
-    args = parser.parse_args()
+    if "--" in sys.argv:
+        # We probably are running this script in UI mode (that is with commands
+        # like `blender --python this_script.py -- --subdivision 2`) and thanks
+        # to this
+        # https://blender.stackexchange.com/questions/6817/how-to-pass-command-line-arguments-to-a-blender-python-script
+        # we know how to modify sys.argv in order to avoid interactions with
+        # blender CLI arguments/options:
+        argv = sys.argv[sys.argv.index("--") + 1 :]  # get all args after "--"
+        args = parser.parse_args(argv)
+    else:
+        args = parser.parse_args()
     if args.verbose:
         parser.print_help()
         print("Parsed arguments: ")
@@ -168,7 +186,7 @@ def main():
             replicate_to_build_grid(cave, args.grid_size_x, args.grid_size_y)
 
     #### Assert the topology of the resulting geometry
-    resulting_bmesh = demote_UI_object_with_mesh_to_bmesh(cave)
+    resulting_bmesh = bpyhelpers.UI_demote_UI_object_with_mesh_to_bmesh(cave)
     # Concerning the expected genus:
     # the basic building block (the cave) genus is five. We build
     # a regular grid out of such an elementary building block:
@@ -182,7 +200,7 @@ def main():
     # block side sitting on the perimeter of the grid. Eventually, this is
     # equivalent to twice half of the perimeter:
     expected_boundary_number = 2 * (args.grid_size_x + args.grid_size_y)
-    bmesh_assert_genus_number_boundaries(
+    bpyhelpers.bmesh_assert_genus_number_boundaries(
         resulting_bmesh,
         expected_genus,
         expected_boundary_number,
@@ -232,45 +250,9 @@ def main():
         ascii_format=True,
         filter_glob="*.ply",
     )
-
-    ##### Proceed with writing just the point cloud (that is remove the faces
-    # from the previous PLY file).
-    # Extract from header the number of vertex lines to copy:
-    number_of_vertex_lines = 0
-    try:
-        for line in open(triangulation_filename):
-            if "element vertex " in line:
-                number_of_vertex_lines = int(line.replace("element vertex ", ""))
-                raise StopIteration
-    except:
-        if args.verbose:
-            print(number_of_vertex_lines, "vertices must be copie to point cloud file.")
-
-    # Proceed with the copy the triangulation file
-    point_cloud_filename = triangulation_filename.replace(
-        "_triangulation", "_point_cloud"
+    bpyhelpers.convert_ply_triangulation_to_point_cloud(
+        triangulation_filename, args.verbose
     )
-    with open(point_cloud_filename, "w") as point_cloud_file:
-        try:
-            done_with_header = False
-            for line in open(triangulation_filename):
-                if not done_with_header:
-                    # Drop the references to existing faces from the header
-                    if "element face " in line:
-                        continue
-                    if "property list uchar uint vertex_indices" in line:
-                        continue
-                    if "end_header" in line:
-                        done_with_header = True
-                else:
-                    # We know how many vertex lines we need to copy prior to exiting.
-                    if not number_of_vertex_lines:
-                        raise StopIteration
-                    number_of_vertex_lines -= 1
-                point_cloud_file.write(line)
-        except:
-            if args.verbose:
-                print("Point cloud file ", point_cloud_filename, " written.")
 
 
 if __name__ == "__main__":

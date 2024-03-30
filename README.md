@@ -3,14 +3,15 @@
 **Table of content**
 <!-- TOC -->
 
-- [Requirements](#requirements)
-- [Installation](#installation)
-- [Exporting to ply](#exporting-to-ply)
-- [TODO](#todo)
-- [The Cave](#the-cave)
-  - [Different rendering tools](#different-rendering-tools)
-  - [Triangulation vs point cloud](#triangulation-vs-point-cloud)
-  - [The effect of the subdivision level on the geometry](#the-effect-of-the-subdivision-level-on-the-geometry)
+- [* Python > 3.10](#-python--310)
+- [](#)
+- [](#)
+- [](#)
+- [](#)
+  - [](#)
+  - [<figure>](#figure)
+  - [](#)
+- [* Try the apply_modifiers=True exporting option.](#-try-the-apply_modifierstrue-exporting-option)
 
 <!-- /TOC -->
 ---
@@ -21,36 +22,44 @@ Ribs is a mock up name for [Lyon fish-bones](./Doc/Lyon_Fish_Bones).
 <img src="Doc/ScreenShots/cave_sub_4_grid_size_x_1_grid_size_y_1_triangulation_-_global_view_point_love_.png" alt="drawing" width="800"/>
 
 ## Requirements
-* Python
+* Python > 3.10
 * Blender version > 4.0.2
 
 ## Installation
 
-Using the blender binary
 ```bash
 cd Src
-blender --background ../Blender/Cave_V5_ready_toscript.blend --python export_to_ply.py
-```
-
-The python module way (avoids Blender UI installation) 
-```bash
-cd Src
-python3.10 -m venv venv-3.10
-source venv-3.10/bin/activate
-pip3.10 install bpy
+python3.10 -m venv venv
+source venv/bin/activate
+(venv) pip install -r requirements.txt
 ```
 
 ## Exporting to ply
 
-```
+```bash
 python export_to_ply.py -h
 python export_to_ply.py -v --subdivision 3 --grid_size_x 3 --grid_size_y 2
 ```
 
 Open the resulting file (`cave_*.ply`) e.g. with `https://point.love/`
 
-## TODO
-* Try the `apply_modifiers=True` exporting option.
+## Interacting with the resulting geometries
+
+If you wish to interact with the resulting geometries with the help of the
+blender UI (that is use commands of the form `blender --python <some_script.py>`),
+and because of
+[this issue](https://blender.stackexchange.com/questions/181928/does-blender-use-a-python-virtual-environment)
+you will further need to define the following `PYTHONPATH` environnement 
+variable
+```bash
+(venv) export PYTHONPATH=`pwd`:`pwd`/venv/lib/python3.10/site-packages
+```
+
+Using Blender UI with the constructed is achieved with e.g (**mind the 
+additional " -- " argument**)
+```bash
+blender --python export_to_ply.py -- -v --subdivision 2
+```
 
 ## The Cave
 
@@ -118,3 +127,6 @@ Open the resulting file (`cave_*.ply`) e.g. with `https://point.love/`
   <img src="Doc/ScreenShots/cave_sub_4_grid_size_x_1_grid_size_y_1_triangulation_-_stalagatites_point_love.png" alt="drawing" width="800"/>
   <figcaption>Triangulation, subdivision=4, with colors</figcaption>
 </figure>
+
+## TODO
+* Try the `apply_modifiers=True` exporting option.
