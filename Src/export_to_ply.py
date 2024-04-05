@@ -1,3 +1,4 @@
+import os
 import collections
 import logging
 import bpy
@@ -161,14 +162,15 @@ def main():
         bpyhelpers.bmesh_print_topological_characteristics(resulting_bmesh)
 
     ### Write the resulting files: start with the triangulation
-    triangulation_filename = (
+    triangulation_filename = os.path.join(
+        args.outputdir,
         "cave_sub_"
         + str(args.subdivision)
         + "_grid_size_x_"
         + str(args.grid_size_x)
         + "_grid_size_y_"
         + str(args.grid_size_y)
-        + "_triangulation.ply"
+        + "_triangulation.ply",
     )
     # Debug note: when the UI is on (that is when is script is invocated with
     # "blender --python export_to_ply.py") then the following ply_export() will

@@ -39,7 +39,7 @@ In order to obtain the resulting PLY format files, you must provide an the
 `--outputdir` flag with an argument that matches the mounted volume e.g.
 
 ```bash
-docker run --rm -v $(pwd)/data:/Output vcity/ribs export_to_ply.py --subdivision 3 --outputdir /Output 
+docker run --rm -v $(pwd)/data:/Output vcity/ribs export_to_ply.py --subdivision 3 --outputdir /Output
 ```
 
 that should create a `data/` directory within the invocation directory with
