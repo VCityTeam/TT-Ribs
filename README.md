@@ -3,15 +3,15 @@
 **Table of content**
 <!-- TOC -->
 
-- [* Python > 3.10](#-python--310)
-- [](#)
-- [](#)
-- [](#)
-- [](#)
-  - [](#)
-  - [<figure>](#figure)
-  - [](#)
-- [* Try the apply_modifiers=True exporting option.](#-try-the-apply_modifierstrue-exporting-option)
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Exporting to ply](#exporting-to-ply)
+- [Interacting with the resulting geometries](#interacting-with-the-resulting-geometries)
+- [The Cave](#the-cave)
+  - [Different rendering tools](#different-rendering-tools)
+  - [Triangulation vs point cloud](#triangulation-vs-point-cloud)
+  - [The effect of the subdivision level on the geometry](#the-effect-of-the-subdivision-level-on-the-geometry)
+- [TODO](#todo)
 
 <!-- /TOC -->
 ---
