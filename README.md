@@ -184,6 +184,7 @@ With `grid_size_x = grid_size_y = 1`
 
 | Subdivisions | # Vertices | #Edges | #Faces | Point Cloud | Triangulation | Time   |
 | ------------ | ---------- | ------ | ------ | ----------- | ------------- | ------ |
+| 1            | 12k        | 25k    | 12k    | 1.3Mb       | 1.7Mb         | 7"     |
 | 2            | 50k        | 101k   | 50k    | 5Mb         | 7Mb           | 14"    |
 | 3            | 202k       | 405k   | 202k   | 19Mb        | 28Mb          | 43"    |
 | 4            | 810k       | 1 619k | 809k   | 77Mb        | 112Mb         | 3'00"  |
@@ -278,6 +279,7 @@ Here is an example of a 3x2 grid system of caves rendered with different tools
 
 | Subdivisions | # Vertices | #Edges | #Faces | Point Cloud | Triangulation | Time   |
 | ------------ | ---------- | ------ | ------ | ----------- | ------------- | ------ |
+| 1            | 35k        | 105K   | 70k    | 4.5Mb       | 5.8M          | 32"    |
 | 2            | 140k       | 420k   | 280k   | 16Mb        | 21Mb          | 1'32"  |
 | 3            | 560k       | 1 682k | 1 121k | 59Mb        | 83Mb          | 5'33"  |
 | 4            | 2 243k     | 6 731k | 4 487k | 226Mb       | 331Mb         | 23'17" |
