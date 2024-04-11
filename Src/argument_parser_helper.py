@@ -2,11 +2,11 @@ import sys
 import argparse
 
 
-def parse_arguments():
+def common_parser():
     parser = argparse.ArgumentParser(
         description="""
         Generate a triangulation file and the associated point cloud file
-        out of the Blender (manually) defined cave.
+        out of the Blender (manually) defined model.
         """,
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
@@ -21,23 +21,15 @@ def parse_arguments():
         type=int,
     )
     parser.add_argument(
-        "--grid_size_x",
-        help="Size of the (sub)cave grid along the first axis",
-        default=1,
-        type=int,
-    )
-    parser.add_argument(
-        "--grid_size_y",
-        help="Size of the (sub)cave grid along the second axis",
-        default=1,
-        type=int,
-    )
-    parser.add_argument(
         "--outputdir",
         help="Directory for resulting PLY files",
         default=".",
         type=str,
     )
+    return parser
+
+
+def parse_arguments(parser):
     if "--" in sys.argv:
         # We probably are running this script in UI mode (that is with commands
         # like `blender --python this_script.py -- --subdivision 2`) and thanks

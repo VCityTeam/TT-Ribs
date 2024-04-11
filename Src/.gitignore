@@ -1,5 +1,7 @@
 __pycache__/
 venv*
 cave_*.ply
-export_to_ply.log
+tunnel_*.ply
+Cave.log
+Tunnel.log
 *.pyc

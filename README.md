@@ -1,6 +1,7 @@
 # Ribs
 
 **Table of content**
+
 <!-- TOC -->
 
 - [Introduction](#introduction)
@@ -21,31 +22,31 @@
 
 ## Introduction
 
-Ribs is a generator of both 2-manifold triangulations and point cloud 
-geometrical data. Through a set of geometric/topological parameters, Ribs 
+Ribs is a generator of both 2-manifold triangulations and point cloud
+geometrical data. Through a set of geometric/topological parameters, Ribs
 finely controls its synthetic results conceived as data tools for the study,
- evaluation and calibration of algorithms working on 3D triangulation and/or 
+evaluation and calibration of algorithms working on 3D triangulation and/or
 point cloud datasets.
 
 Ribs uses the [Python wrappers](https://docs.blender.org/api/current/) of
-[Blender's 3D modeling features](https://en.wikipedia.org/wiki/Blender_(software))
+[Blender's 3D modeling features](<https://en.wikipedia.org/wiki/Blender_(software)>)
 to generate two datasets illustrating two kinds of geometries:
- - a regular and human manufactured system of tunnels,
- - a less smooth/regular cave system.
+
+- a regular and human manufactured system of tunnels,
+- a less smooth/regular cave system.
 
 In addition to the surface and point cloud data, Ribs also provides a path
 dataset (a branched system of discrete 1D-lines) that is a manual approximation
 of the
-[topological skeleton](https://en.wikipedia.org/wiki/Topological_skeleton) 
+[topological skeleton](https://en.wikipedia.org/wiki/Topological_skeleton)
 of the tunnel/cave system.
 Such skeleton can be used either for studying visualisation techniques
 (how to constrain the camera exploring the tunnel/cave system to remain
 "inside" the system?) or to study skeleton extraction algorithms.
 
-Note: the repository name, Ribs, is a mock up name for 
+Note: the repository name, Ribs, is a mock up name for
 [Lyon fish-bones](./Doc/Lyon_Fish_Bones)
 that was a source of inspiration for the tunnel system part of the project.
-
 
 ## Ribs generator usage
 
@@ -53,23 +54,25 @@ that was a source of inspiration for the tunnel system part of the project.
 
 #### Supported file format
 
-[PLY - Polygon File Format](https://en.wikipedia.org/wiki/PLY_(file_format))
-(see also 
+[PLY - Polygon File Format](<https://en.wikipedia.org/wiki/PLY_(file_format)>)
+(see also
 [Paul Bourke's PLY format definition](https://paulbourke.net/dataformats/ply/))
 is the only file format supported by Ribs.
 
 `PLY` was chosen because:
+
 - it allows the representation of both 3D point clouds and/or triangulations,
 - it is supported by many softwares among witch
-[Point Cloud Library (PCL)](https://pointclouds.org/documentation/tutorials/pcd_file_format.html),
-[Cloud Compare](https://en.wikipedia.org/wiki/CloudCompare#Input/Output),
-[MeshLab](https://en.wikipedia.org/wiki/MeshLab#References)),
+  [Point Cloud Library (PCL)](https://pointclouds.org/documentation/tutorials/pcd_file_format.html),
+  [Cloud Compare](https://en.wikipedia.org/wiki/CloudCompare#Input/Output),
+  [MeshLab](https://en.wikipedia.org/wiki/MeshLab#References)),
 - its [ASCII](https://en.wikipedia.org/wiki/ASCII) representation (as opposed
   to binary formats) allows for a simple parsing.
 
 #### Requirements
-* Python > 3.10
-* Blender version > 4.0.2
+
+- Python > 3.10
+- Blender version > 4.0.2
 
 ### Examples of usage
 
@@ -85,35 +88,38 @@ source venv/bin/activate
 #### Usage parameters
 
 The flags and parameter arguments are document by the following command
+
 ```bash
-python export_to_ply.py -h
+python Cave.py -h
 ```
 
 As a quick summary of parameters acting on the topology/geometry:
-* `--subdivision SUBDIVISION`
-  
+
+- `--subdivision SUBDIVISION`
+
   The number of recursive
   [Catmull-Clark](https://en.wikipedia.org/wiki/Catmull%E2%80%93Clark_subdivision_surface)
   subdivisions that are applied to the original low-resolution surface prior
   to the triangularisation of the result. This parameter acts on the number
-  of produced vertices/triangles. 
+  of produced vertices/triangles.
 
-* `--grid_size_x GRID_SIZE_X` and `--grid_size_y GRID_SIZE_Y`
-  
-  The number of replications, along the `X` axis and along the `Y` axis 
+- `--grid_size_x GRID_SIZE_X` and `--grid_size_y GRID_SIZE_Y`
+
+  The number of replications, along the `X` axis and along the `Y` axis
   respectively, of the basic cave building block. Those parameter act on the
   topology (genus and number of boundaries) of the resulting gridified cave
-  system and as such induces a higher number of vertices/triangles.   
+  system and as such induces a higher number of vertices/triangles.
 
 Other parameters
-* `--outputdir OUTPUTDIR`
-  
+
+- `--outputdir OUTPUTDIR`
+
   Target directory for the resulting PLY files.
 
-
 #### Usage example
+
 ```bash
-python export_to_ply.py -v --subdivision 3 --grid_size_x 3 --grid_size_y 2
+python Cave.py -v --subdivision 3 --grid_size_x 3 --grid_size_y 2
 ```
 
 Open the resulting file (`cave_*.ply`) e.g. with `https://point.love/`
@@ -124,28 +130,36 @@ If you wish to interact with the resulting geometries with the help of the
 blender UI (that is use commands of the form `blender --python <some_script.py>`),
 and because of
 [this issue](https://blender.stackexchange.com/questions/181928/does-blender-use-a-python-virtual-environment)
-you will further need to define the following `PYTHONPATH` environnement 
+you will further need to define the following `PYTHONPATH` environnement
 variable
+
 ```bash
 (venv) export PYTHONPATH=`pwd`:`pwd`/venv/lib/python3.10/site-packages
 ```
 
-Using Blender UI with the constructed is achieved with e.g (**mind the 
+Using Blender UI with the constructed is achieved with e.g (**mind the
 additional " -- " argument**)
+
 ```bash
-blender --python export_to_ply.py -- -v --subdivision 2
+blender --python Cave.py -- -v --subdivision 2
+```
+
+or
+
+```bash
+blender --python Tunnel.py -- -v --subdivision 2
 ```
 
 ## The Cave system
 
 ### The basic building block
+
 <img src="Doc/ScreenShots/cave_sub_4_grid_size_x_1_grid_size_y_1_triangulation_-_global_view_point_love_.png" alt="drawing" width="800"/>
-
-
 
 ### Two types of geometrical outputs: triangulation and point cloud
 
 Ribs generates
+
 <figure>
   <img src="Doc/ScreenShots/cave_sub_1_grid_size_x_1_grid_size_y_1_point_cloud_-_global_view_point_love.png" alt="drawing" width="800"/>
   <figcaption>Point cloud, subdivision=1</figcaption>
@@ -166,11 +180,21 @@ Ribs generates
   <figcaption>Triangulation, subdivision=2</figcaption>
 </figure>
 
-### Modeling parameter: varying the stalactites length  
+With `grid_size_x = grid_size_y = 1`
+
+| Subdivisions | # Vertices | #Edges | #Faces | Point Cloud | Triangulation | Time   |
+| ------------ | ---------- | ------ | ------ | ----------- | ------------- | ------ |
+| 2            | 50k        | 101k   | 50k    | 5Mb         | 7Mb           | 14"    |
+| 3            | 202k       | 405k   | 202k   | 19Mb        | 28Mb          | 43"    |
+| 4            | 810k       | 1 619k | 809k   | 77Mb        | 112Mb         | 3'00"  |
+| 5            | 3 238k     | 6 476k | 3 237k | 305M        | 459M          | 11'46" |
+
+### Modeling parameter: varying the stalactites length
 
 The vertices sitting at the top of the stalactites have been regrouped within
 a "Change_size_stalactite" vertex group to which a `SimpleDeform` modifier,
-configured in `Stretch` mode, is applied. 
+configured in `Stretch` mode, is applied.
+
 <center><figure>
   <img src="Doc/ScreenShots/Cave_-_Stalactites_simple_deform_strech_factor.png" alt="drawing" width="300"/>
   <figcaption>Triangulation, subdivision=2</figcaption>
@@ -198,7 +222,6 @@ respectively `0`, `7`, `14` and `21`
     </td>
   </tr>
 </table>
-
 
 ### Modeling parameter: The effect of the subdivision level on the geometry
 
@@ -238,7 +261,7 @@ In order to generate datasets with ranging topologies and dataset sizes, Ribs
 allows for the composition (the result is guaranteed to be a single 2-manifold
 surface) of the basic building block into grids.
 
-Here is an example of a 3x2 grid system of caves rendered with different tools 
+Here is an example of a 3x2 grid system of caves rendered with different tools
 (and point sizes).
 
 <figure>
@@ -253,7 +276,14 @@ Here is an example of a 3x2 grid system of caves rendered with different tools
 
 ## The tunnel
 
-## TODO
-* add a CLI parameter controlling the stalactites stretch factor.
+| Subdivisions | # Vertices | #Edges | #Faces | Point Cloud | Triangulation | Time   |
+| ------------ | ---------- | ------ | ------ | ----------- | ------------- | ------ |
+| 2            | 140k       | 420k   | 280k   | 16Mb        | 21Mb          | 1'32"  |
+| 3            | 560k       | 1 682k | 1 121k | 59Mb        | 83Mb          | 5'33"  |
+| 4            | 2 243k     | 6 731k | 4 487k | 226Mb       | 331Mb         | 23'17" |
 
-* Try the `apply_modifiers=True` exporting option.
+## TODO
+
+- add a CLI parameter controlling the stalactites stretch factor.
+
+- Try the `apply_modifiers=True` exporting option.
