@@ -141,7 +141,7 @@ you will further need to define the following `PYTHONPATH` environnement
 variable
 
 ```bash
-(venv) export PYTHONPATH=`pwd`:`pwd`/venv/lib/python3.10/site-packages
+export PYTHONPATH=`pwd`:`pwd`/venv/lib/python3.10/site-packages
 ```
 
 Using Blender UI with the constructed is achieved with e.g (**mind the
