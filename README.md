@@ -87,7 +87,7 @@ cd TT-Ribs
 cd Src
 python3.10 -m venv venv
 source venv/bin/activate
-(venv) pip install -r requirements.txt
+pip install -r requirements.txt
 ```
 
 #### Usage parameters
