@@ -122,7 +122,9 @@ Other parameters
   Target directory for the resulting PLY files.
 
 #### Usage example
-
+```bash
+python Cave.py -v --subdivision 2 --grid_size_x 2
+```
 ```bash
 python Cave.py -v --subdivision 3 --grid_size_x 3 --grid_size_y 2
 ```
