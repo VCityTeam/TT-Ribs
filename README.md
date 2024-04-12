@@ -79,6 +79,11 @@ is the only file format supported by Ribs.
 #### Installation
 
 ```bash
+git clone https://github.com/VCityTeam/TT-Ribs.git  # This repository
+cd TT-Ribs
+```
+
+```bash
 cd Src
 python3.10 -m venv venv
 source venv/bin/activate
