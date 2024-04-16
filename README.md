@@ -126,7 +126,7 @@ Other parameters
 python Cave.py -v --subdivision 2 --grid_size_x 2
 ```
 ```bash
-python Cave.py -v --subdivision 3 --grid_size_x 3 --grid_size_y 2
+python Cave.py -v --subdivision 2 --grid_size_x 2
 ```
 
 Open the resulting file (`cave_*.ply`) e.g. with `https://point.love/`
@@ -293,6 +293,8 @@ Here is an example of a 3x2 grid system of caves rendered with different tools
 
 ## TODO
 
-- add a CLI parameter controlling the stalactites stretch factor.
-
+- For Tunnel: document the existence of a wall painting (a group of three
+  hunters) and its position within the cave.
+- Document the existence and usage of `Density_test` object
+- Document the existence and usage of `Path` object
 - Try the `apply_modifiers=True` exporting option.

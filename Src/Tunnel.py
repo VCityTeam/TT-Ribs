@@ -7,7 +7,7 @@ from export_to_ply_files import export_to_ply_files
 
 
 class Tunnel:
-    blender_pathfile = "../Blender/Tunnel_V6-1.blend"
+    blender_pathfile = "../Blender/Tunnel_V7-1.blend"
 
     def __init__(self):
         self.parse_aguments()
@@ -62,7 +62,7 @@ class Tunnel:
         bpyhelpers.bmesh_assert_genus_number_boundaries(
             tunnel_bmesh,
             25,
-            4,
+            2,
             "The topology of the tunnel system is wrong.",
         )
         if self.verbose:

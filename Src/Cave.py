@@ -16,7 +16,7 @@ logging.basicConfig(filename="Cave.log", encoding="utf-8", level=logging.INFO)
 
 class Cave:
     IDENTIFICATION_THRESHOLD = 5.1  # Totally empirical and ad-hoc to this Cave
-    blender_pathfile = "../Blender/Cave_V5_ready_toscript.blend"
+    blender_pathfile = "../Blender/Cave_V6-1.blend"
 
     def __init__(self):
         self.parse_aguments()
@@ -44,7 +44,7 @@ class Cave:
         parser.add_argument(
             "--stalactite_factor",
             help="Vertical extension factor of the stalactites",
-            default=1.0,
+            default=-25.0,
             type=float,
         )
         args = parse_arguments(parser)
@@ -69,9 +69,14 @@ class Cave:
             selected_objects=[self.cave], object=self.cave, active_object=self.cave
         ):
 
+            stalactites = self.cave.modifiers["SimpleDeform"]
+            stalactites.factor = self.slactatite_strech_factor
+            bpy.ops.object.modifier_apply(modifier="SimpleDeform")
+
             subdiv = self.cave.modifiers["Subdivision"]
             subdiv.levels = self.subdivision
             bpy.ops.object.modifier_apply(modifier="Subdivision")
+
             bpy.ops.object.modifier_apply(modifier="Displace.ground")
             bpy.ops.object.modifier_apply(modifier="Displace.walls")
             bpy.ops.object.modifier_apply(modifier="Displace_structure")
@@ -131,15 +136,15 @@ class Cave:
             selected_objects=[self.cave], object=self.cave, active_object=self.cave
         ):
             if self.grid_size_x > 1:
-                copier_x = self.cave.modifiers["Array_est-ouest"]
+                copier_x = self.cave.modifiers["Array_Y"]
                 copier_x.count = self.grid_size_x
                 # Note: in case debugging might requires a different offset
                 # copier_x.constant_offset_displace = mathutils.Vector((75.0, -15.0, -8.0))
-                bpy.ops.object.modifier_apply(modifier="Array_est-ouest")
+                bpy.ops.object.modifier_apply(modifier="Array_Y")
             if self.grid_size_y > 1:
-                copier_y = self.cave.modifiers["Array_nord-sud"]
+                copier_y = self.cave.modifiers["Array_X"]
                 copier_y.count = self.grid_size_y
-                bpy.ops.object.modifier_apply(modifier="Array_nord-sud")
+                bpy.ops.object.modifier_apply(modifier="Array_X")
 
             logger.debug(
                 "Number of boundaries AFTER repetitions (but before bridging): "
@@ -187,9 +192,9 @@ class Cave:
         """
         resulting_bmesh = bpyhelpers.UI_demote_UI_object_with_mesh_to_bmesh(self.cave)
         # Concerning the expected genus:
-        # the basic building block (the cave) genus is five. We build
+        # the basic building block (the cave) genus is six. We build
         # a regular grid out of such an elementary building block:
-        expected_genus = 5 * self.grid_size_x * self.grid_size_y
+        expected_genus = 6 * self.grid_size_x * self.grid_size_y
         # But when building a true grid (when there is replication in bother
         # directions) the gridification has a genus enhancing topological effect:
         expected_genus += (self.grid_size_x - 1) * (self.grid_size_y - 1)
