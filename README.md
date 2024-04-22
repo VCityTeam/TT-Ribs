@@ -122,9 +122,11 @@ Other parameters
   Target directory for the resulting PLY files.
 
 #### Usage example
+
 ```bash
 python Cave.py -v --subdivision 2 --grid_size_x 2
 ```
+
 ```bash
 python Cave.py -v --subdivision 2 --grid_size_x 2
 ```
@@ -144,8 +146,7 @@ variable
 export PYTHONPATH=`pwd`:`pwd`/venv/lib/python3.10/site-packages
 ```
 
-Using Blender UI with the constructed is achieved with e.g (**mind the
-additional " -- " argument**)
+Using Blender UI with the constructed is achieved with e.g.
 
 ```bash
 blender --python Cave.py -- -v --subdivision 2
@@ -156,6 +157,10 @@ or
 ```bash
 blender --python Tunnel.py -- -v --subdivision 2
 ```
+
+> [!WARNING]
+> In the above commands mind the additional " -- " argument that is not
+> required when running "outside" of the blender UI.
 
 ## The Cave system
 
@@ -283,6 +288,12 @@ Here is an example of a 3x2 grid system of caves rendered with different tools
 </figure>
 
 ## The tunnel
+
+The flags and parameter arguments are document by the following command
+
+```bash
+python Tunnel.py -h
+```
 
 | Subdivisions | # Vertices | #Edges | #Faces | Point Cloud | Triangulation | Time   |
 | ------------ | ---------- | ------ | ------ | ----------- | ------------- | ------ |

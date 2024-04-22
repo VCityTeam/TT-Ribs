@@ -4,6 +4,7 @@ import bpy
 import bpyhelpers
 from argument_parser_helper import common_parser, parse_arguments
 from export_to_ply_files import export_to_ply_files
+from export_to_obj_files import export_to_obj_files
 
 
 class Tunnel:
@@ -16,6 +17,7 @@ class Tunnel:
         self.__apply_modifiers()
         self.__assert_resulting_topology()
         self.__export_to_ply_files()
+        self.__export_to_obj_files()
 
     def parse_aguments(self):
         parser = common_parser()
@@ -23,6 +25,8 @@ class Tunnel:
         self.subdivision = args.subdivision
         self.outputdir = args.outputdir
         self.verbose = args.verbose
+        self.no_ply_export = args.no_ply_export
+        self.no_obj_export = args.no_obj_export
 
     def __apply_modifiers(self):
         """
@@ -69,12 +73,24 @@ class Tunnel:
             bpyhelpers.bmesh_print_topological_characteristics(tunnel_bmesh)
 
     def __export_to_ply_files(self):
-        ### Write the resulting files: start with the triangulation
-        triangulation_filename = os.path.join(
+        """Write the resulting PLY files"""
+        if self.no_ply_export:
+            return
+        ply_triangulation_filename = os.path.join(
             self.outputdir,
             "tunnel_sub_" + str(self.subdivision) + "_triangulation.ply",
         )
-        export_to_ply_files(triangulation_filename, self.verbose)
+        export_to_ply_files(ply_triangulation_filename, self.verbose)
+
+    def __export_to_obj_files(self):
+        """Write the resulting OBJ files"""
+        if self.no_obj_export:
+            return
+        obj_triangulation_filename = os.path.join(
+            self.outputdir,
+            "tunnel_sub_" + str(self.subdivision) + "_triangulation.obj",
+        )
+        export_to_obj_files(obj_triangulation_filename, self.verbose)
 
 
 if __name__ == "__main__":

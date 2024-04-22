@@ -4,4 +4,5 @@ cave_*.ply
 tunnel_*.ply
 Cave.log
 Tunnel.log
+data/
 *.pyc

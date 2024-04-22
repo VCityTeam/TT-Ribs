@@ -26,6 +26,16 @@ def common_parser():
         default=".",
         type=str,
     )
+    parser.add_argument(
+        "--no-ply-export",
+        help="Do not export to PLY files.",
+        action="store_true",
+    )
+    parser.add_argument(
+        "--no-obj-export",
+        help="Do not export to OBJ files.",
+        action="store_true",
+    )
     return parser
 
 
