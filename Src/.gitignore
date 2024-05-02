@@ -1,8 +1,10 @@
 __pycache__/
+*.pyc
 venv*
 cave_*.ply
+cave_*.obj
 tunnel_*.ply
+tunnel_*.obj
 Cave.log
 Tunnel.log
 data/
-*.pyc
