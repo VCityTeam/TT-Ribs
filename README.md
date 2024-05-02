@@ -1,13 +1,16 @@
-# Ribs
+# Ribs<!-- omit from toc -->
 
-**Table of content**
-
-<!-- TOC -->
+## Table Of Content<!-- omit from toc -->
 
 - [Introduction](#introduction)
 - [Ribs generator usage](#ribs-generator-usage)
   - [Technical elements](#technical-elements)
+    - [Supported file format](#supported-file-format)
+    - [Requirements](#requirements)
   - [Examples of usage](#examples-of-usage)
+    - [Installation](#installation)
+    - [Usage parameters](#usage-parameters)
+    - [Usage example](#usage-example)
   - [Interacting through Blender with the resulting geometries](#interacting-through-blender-with-the-resulting-geometries)
 - [The Cave system](#the-cave-system)
   - [The basic building block](#the-basic-building-block)
@@ -17,8 +20,6 @@
   - [Modeling parameter: composition into a grid system of caves](#modeling-parameter-composition-into-a-grid-system-of-caves)
 - [The tunnel](#the-tunnel)
 - [TODO](#todo)
-
-<!-- /TOC -->
 
 ## Introduction
 

@@ -7,6 +7,7 @@ import bpyhelpers
 import mathutils
 from argument_parser_helper import common_parser, parse_arguments
 from export_to_ply_files import export_to_ply_files
+from export_to_obj_files import export_to_obj_files
 
 
 ########### Globals
@@ -26,6 +27,7 @@ class Cave:
         self.__replicate_to_build_grid()
         self.__assert_resulting_topology()
         self.__export_to_ply_files()
+        self.__export_to_obj_files()
 
     def parse_aguments(self):
         parser = common_parser()
@@ -54,6 +56,8 @@ class Cave:
         self.slactatite_strech_factor = args.stalactite_factor
         self.outputdir = args.outputdir
         self.verbose = args.verbose
+        self.no_ply_export = args.no_ply_export
+        self.no_obj_export = args.no_obj_export
 
     def __apply_modifiers(self):
         """
@@ -213,9 +217,8 @@ class Cave:
         if self.verbose:
             bpyhelpers.bmesh_print_topological_characteristics(resulting_bmesh)
 
-    def __export_to_ply_files(self):
-        ### Write the resulting files: start with the triangulation
-        triangulation_filename = os.path.join(
+    def __export_triangulation_basename(self):
+        return os.path.join(
             self.outputdir,
             "cave_sub_"
             + str(self.subdivision)
@@ -223,9 +226,21 @@ class Cave:
             + str(self.grid_size_x)
             + "_grid_size_y_"
             + str(self.grid_size_y)
-            + "_triangulation.ply",
+            + "_triangulation",
         )
-        export_to_ply_files(triangulation_filename, self.verbose)
+
+    def __export_to_ply_files(self):
+        """Write the resulting PLY files"""
+        ply_triangulation_filename = self.__export_triangulation_basename() + ".ply"
+        print(ply_triangulation_filename)
+        export_to_ply_files(ply_triangulation_filename, self.verbose)
+
+    def __export_to_obj_files(self):
+        """Write the resulting OBJ files"""
+        if self.no_obj_export:
+            return
+        obj_triangulation_filename = self.__export_triangulation_basename() + ".obj"
+        export_to_obj_files(obj_triangulation_filename, self.verbose)
 
 
 if __name__ == "__main__":

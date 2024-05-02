@@ -72,24 +72,23 @@ class Tunnel:
         if self.verbose:
             bpyhelpers.bmesh_print_topological_characteristics(tunnel_bmesh)
 
+    def __export_triangulation_basename(self):
+        return os.path.join(
+            self.outputdir, "tunnel_sub_" + str(self.subdivision) + "_triangulation"
+        )
+
     def __export_to_ply_files(self):
         """Write the resulting PLY files"""
         if self.no_ply_export:
             return
-        ply_triangulation_filename = os.path.join(
-            self.outputdir,
-            "tunnel_sub_" + str(self.subdivision) + "_triangulation.ply",
-        )
+        ply_triangulation_filename = self.__export_triangulation_basename() + ".ply"
         export_to_ply_files(ply_triangulation_filename, self.verbose)
 
     def __export_to_obj_files(self):
         """Write the resulting OBJ files"""
         if self.no_obj_export:
             return
-        obj_triangulation_filename = os.path.join(
-            self.outputdir,
-            "tunnel_sub_" + str(self.subdivision) + "_triangulation.obj",
-        )
+        obj_triangulation_filename = self.__export_triangulation_basename() + ".obj"
         export_to_obj_files(obj_triangulation_filename, self.verbose)
 
 
