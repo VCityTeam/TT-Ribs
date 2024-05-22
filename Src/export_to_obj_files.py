@@ -32,7 +32,7 @@ def export_to_obj_files(obj_triangulation_filename, verbose_mode):
         apply_modifiers=False,
         export_selected_objects=True,
         export_uv=False,
-        export_normals=False,
+        export_normals=True,
         export_colors=True,
         export_triangulated_mesh=True,
         export_materials=False,  # Colors being at vertices, no materials needed
