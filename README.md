@@ -210,7 +210,7 @@ a "Change_size_stalactite" vertex group to which a `SimpleDeform` modifier,
 configured in `Stretch` mode, is applied.
 
 <center><figure>
-  <img src="Doc/ScreenShots/Cave_-_Stalactites_simple_deform_strech_factor.png" alt="drawing" width="300"/>
+  <img src="Doc/ScreenShots/Cave_-_Stalactites_simple_deform_stretch_factor.png" alt="drawing" width="300"/>
   <figcaption>Triangulation, subdivision=2</figcaption>
 </figure></center>
 
@@ -221,18 +221,18 @@ respectively `0`, `7`, `14` and `21`
 <table>
   <tr>
     <td>
-       <img src="Doc/ScreenShots/Cave_-_Stalactites_with_strech_factor_0.png" alt="drawing" width="350"/>
+       <img src="Doc/ScreenShots/Cave_-_Stalactites_with_stretch_factor_0.png" alt="drawing" width="350"/>
     </td>
     <td>
-       <img src="Doc/ScreenShots/Cave_-_Stalactites_with_strech_factor_7.png" alt="drawing" width="350"/>
+       <img src="Doc/ScreenShots/Cave_-_Stalactites_with_stretch_factor_7.png" alt="drawing" width="350"/>
     </td>
   </tr>
   <tr>
     <td>
-       <img src="Doc/ScreenShots/Cave_-_Stalactites_with_strech_factor_14.png" alt="drawing" width="350"/>
+       <img src="Doc/ScreenShots/Cave_-_Stalactites_with_stretch_factor_14.png" alt="drawing" width="350"/>
     </td>
     <td>
-       <img src="Doc/ScreenShots/Cave_-_Stalactites_with_strech_factor_21.png" alt="drawing" width="350"/>
+       <img src="Doc/ScreenShots/Cave_-_Stalactites_with_stretch_factor_21.png" alt="drawing" width="350"/>
     </td>
   </tr>
 </table>
