@@ -20,16 +20,17 @@ class Cave:
     blender_pathfile = "../Blender/Cave_V6-1.blend"
 
     def __init__(self):
-        self.parse_aguments()
+        self.parse_arguments()
         bpy.ops.wm.open_mainfile(filepath=Cave.blender_pathfile)
         self.cave = bpy.data.objects["Cave"]
         self.__apply_modifiers()
         self.__replicate_to_build_grid()
+        self.__fill_holes()
         self.__assert_resulting_topology()
         self.__export_to_ply_files()
         self.__export_to_obj_files()
 
-    def parse_aguments(self):
+    def parse_arguments(self):
         parser = common_parser()
         parser.add_argument(
             "--grid_size_x",
@@ -49,11 +50,18 @@ class Cave:
             default=-25.0,
             type=float,
         )
+        parser.add_argument(
+            "--fill_holes",
+            help="Plug/fill surface boundaries/holes (topological change)",
+            default=False,
+            type=bool,
+        )
         args = parse_arguments(parser)
         self.grid_size_x = args.grid_size_x
         self.grid_size_y = args.grid_size_y
         self.subdivision = args.subdivision
-        self.slactatite_strech_factor = args.stalactite_factor
+        self.fill_holes = args.fill_holes
+        self.slactatite_stretch_factor = args.stalactite_factor
         self.outputdir = args.outputdir
         self.verbose = args.verbose
         self.no_ply_export = args.no_ply_export
@@ -74,7 +82,7 @@ class Cave:
         ):
 
             stalactites = self.cave.modifiers["SimpleDeform"]
-            stalactites.factor = self.slactatite_strech_factor
+            stalactites.factor = self.slactatite_stretch_factor
             bpy.ops.object.modifier_apply(modifier="SimpleDeform")
 
             subdiv = self.cave.modifiers["Subdivision"]
@@ -116,6 +124,32 @@ class Cave:
                 if distance < Cave.IDENTIFICATION_THRESHOLD:
                     result.append((i, j))
         return result
+
+    def __fill_holes(self):
+        """Fill in all holes (boundary edge list) with faces"""
+        if not self.fill_holes:
+            return
+        # Getting UI based operators like bpy.ops.mesh.fill() or
+        # bpy.ops.mesh.grid_fill() are difficult to get working since they
+        # have (implicit and most often und "context" assumptions, that can only
+        # be found by tracking them in the sources (refer e.g. to this post
+        # https://devtalk.blender.org/t/where-can-i-find-infromation-about-the-needed-environment-of-operators/20526/6 )
+        # For example trying to get the following to work (it does run but
+        # doesn't change the topology of the mesh) was a failure.
+        #   bpy.ops.object.mode_set(mode='EDIT')
+        #   my_obj = bpy.data.objects["Cave"]
+        #   my_obj.select_set(True)
+        #   bpy.context.view_layer.objects.active = my_obj
+        #   bpy.ops.mesh.fill()
+        # Hence, we resolve to using the "low" level interface.
+
+        cave_bmesh = bpyhelpers.UI_demote_UI_object_with_mesh_to_bmesh(self.cave)
+        boundaries = bpyhelpers.bmesh_get_boundaries(cave_bmesh)
+        for boundary in boundaries:
+            bmesh.ops.holes_fill(cave_bmesh, edges=boundary, sides=0)
+        # Note: it is KEY to write the bmesh back to the mesh, refer to
+        # https://docs.blender.org/api/current/bmesh.html#example-script
+        cave_bmesh.to_mesh(self.cave.data)
 
     def __replicate_to_build_grid(self):
         if self.grid_size_x <= 1 and self.grid_size_y <= 1:
@@ -202,12 +236,15 @@ class Cave:
         # But when building a true grid (when there is replication in bother
         # directions) the gridification has a genus enhancing topological effect:
         expected_genus += (self.grid_size_x - 1) * (self.grid_size_y - 1)
-        # Concerning the expected number of boundaries:
-        # First let us notice that they are no boundaries internal to the
-        # grid. Then let us notive that there is a boundary per elementary (cave)
-        # block side sitting on the perimeter of the grid. Eventually, this is
-        # equivalent to twice half of the perimeter:
-        expected_boundary_number = 2 * (self.grid_size_x + self.grid_size_y)
+        if self.fill_holes:
+            expected_boundary_number = 0
+        else:
+            # Concerning the expected number of boundaries:
+            # First let us notice that they are no boundaries internal to the
+            # grid. Then let us notice that there is a boundary per elementary (cave)
+            # block side sitting on the perimeter of the grid. Eventually, this is
+            # equivalent to twice half of the perimeter:
+            expected_boundary_number = 2 * (self.grid_size_x + self.grid_size_y)
         bpyhelpers.bmesh_assert_genus_number_boundaries(
             resulting_bmesh,
             expected_genus,
@@ -218,16 +255,18 @@ class Cave:
             bpyhelpers.bmesh_print_topological_characteristics(resulting_bmesh)
 
     def __export_triangulation_basename(self):
-        return os.path.join(
-            self.outputdir,
+        filename = (
             "cave_sub_"
             + str(self.subdivision)
             + "_grid_size_x_"
             + str(self.grid_size_x)
             + "_grid_size_y_"
             + str(self.grid_size_y)
-            + "_triangulation",
         )
+        if self.fill_holes:
+            filename += "_no_boundaries"
+        filename += "_triangulation"
+        return os.path.join(self.outputdir, filename)
 
     def __export_to_ply_files(self):
         """Write the resulting PLY files"""
