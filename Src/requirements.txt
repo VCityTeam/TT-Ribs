@@ -1,2 +1,5 @@
 bpyhelpers @ git+https://github.com/VCityTeam/bpyhelpers.git@master
 bpy==4.0.0
+mathutils
+bmesh
+bpath
