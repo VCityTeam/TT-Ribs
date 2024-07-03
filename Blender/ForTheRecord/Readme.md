@@ -20,9 +20,14 @@
     - the renderer is erroneously set to be `Eevie` (that does not offer a
       `Bake` option)
     - the Tunnel object is not selected: exported PLY files are thus empty.
-- `Cave_V6-1.py`: fixes of `Cave_V6.py` (as opposed to new features)
+- `Cave_V6-1.blend`: fixes of `Cave_V6.blend` (as opposed to new features)
   - the renderer is set to be `Cycles`
   - the Tunnel object is now selected.
+- `Cave_V6-2.blend`: fixes of `Cave_V6-1.blend` (as opposed to new features)
+  - The array modifiers of the Path object, previously named in french
+    "Array_est-ouest" resp. "Array_sud-nord" renamed in english to
+    "Array_X" resp. "Array_Y" in alignement with the modifiers of the Cave
+    object.
 
 ## Tunnel
 
