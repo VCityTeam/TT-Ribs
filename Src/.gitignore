@@ -3,8 +3,11 @@ __pycache__/
 venv*
 cave_*.ply
 cave_*.obj
+path_*.ply
+path_*.obj
 tunnel_*.ply
 tunnel_*.obj
 Cave.log
+Path.log
 Tunnel.log
 data/
