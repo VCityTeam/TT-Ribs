@@ -25,7 +25,7 @@ class Cave:
         self.path = bpy.data.objects["Path"]
         self.__apply_modifiers()
         self.__replicate_to_build_grid()
-        self.__fill_holes()
+        # self.__fill_holes()
         # self.__assert_resulting_topology()
         self.__export_to_ply_files()
         self.__export_to_obj_files()
@@ -54,7 +54,7 @@ class Cave:
         self.grid_size_x = args.grid_size_x
         self.grid_size_y = args.grid_size_y
         self.subdivision = args.subdivision
-        self.fill_holes = args.fill_holes
+        # self.fill_holes = args.fill_holes
         # self.slactatite_stretch_factor = args.stalactite_factor
         self.outputdir = args.outputdir
         self.verbose = args.verbose
@@ -258,8 +258,8 @@ class Cave:
             + "_grid_size_y_"
             + str(self.grid_size_y)
         )
-        if self.fill_holes:
-            filename += "_no_boundaries"
+        # if self.fill_holes:
+        #     filename += "_no_boundaries"
         filename += "_triangulation"
         return os.path.join(self.outputdir, filename)
 
