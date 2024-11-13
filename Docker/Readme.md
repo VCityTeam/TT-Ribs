@@ -25,6 +25,18 @@
 docker build -t vcity/ribs https://github.com/VCityTeam/TT-Ribs.git -f Docker/Dockerfile
 ```
 
+:warning: if you are running on arch different from amd64 and you get the following error message
+```
+Ignored the following versions that require a different python version: 2.82.1 Requires-Python >=3.7, <3.8                                         
+0.845 ERROR: Could not find a version that satisfies the requirement bpy
+```
+
+then you will have to cross build for the amd64 arch that is use
+
+```bash
+docker buildx build --platform linux/amd64 -t vcity/ribs https://github.com/VCityTeam/TT-Ribs.git -f Docker/Dockerfile
+```
+
 ### Building after cloning
 
 From the root folder of the project
