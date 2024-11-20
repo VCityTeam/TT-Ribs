@@ -1,7 +1,9 @@
 {
     "cSpell.words": [
         "barycenters",
+        "bmesh",
         "bpyhelpers",
+        "mathutils",
         "slactatite"
     ],
     "markdownlint.config": {"no-inline-html": false}

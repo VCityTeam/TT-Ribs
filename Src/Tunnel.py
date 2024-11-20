@@ -5,7 +5,7 @@ import bpyhelpers
 from argument_parser_helper import common_parser, parse_arguments
 from export_to_ply_files import export_to_ply_files
 from export_to_obj_files import export_to_obj_files
-
+from fill_holes import fill_holes
 
 class Tunnel:
     blender_pathfile = "../Blender/Tunnel_V7-1.blend"
@@ -15,14 +15,22 @@ class Tunnel:
         bpy.ops.wm.open_mainfile(filepath=Tunnel.blender_pathfile)
         self.tunnel = bpy.data.objects["Tunnel"]
         self.__apply_modifiers()
+        self.__fill_holes()
         self.__assert_resulting_topology()
         self.__export_to_ply_files()
         self.__export_to_obj_files()
 
     def parse_aguments(self):
         parser = common_parser()
+        parser.add_argument(
+            "--fill_holes",
+            help="Plug/fill surface boundaries/holes (topological change)",
+            default=False,
+            type=bool,
+        )
         args = parse_arguments(parser)
         self.subdivision = args.subdivision
+        self.fill_holes = args.fill_holes
         self.outputdir = args.outputdir
         self.verbose = args.verbose
         self.no_ply_export = args.no_ply_export
@@ -58,24 +66,37 @@ class Tunnel:
             # from the application of the "Subdivision" modifier).
             bpy.ops.object.bake(type="COMBINED")
 
+    def __fill_holes(self):
+        """Fill in all holes (boundary edge list) with faces"""
+        if not self.fill_holes:
+            return
+        fill_holes(self.tunnel)
+
     def __assert_resulting_topology(self):
         """
         Assert the topology of the resulting geometry
         """
+        if self.fill_holes:
+            expected_boundary_number = 0
+        else:
+            expected_boundary_number = 2
+
         tunnel_bmesh = bpyhelpers.UI_demote_UI_object_with_mesh_to_bmesh(self.tunnel)
         bpyhelpers.bmesh_assert_genus_number_boundaries(
             tunnel_bmesh,
             25,
-            2,
+            expected_boundary_number,
             "The topology of the tunnel system is wrong.",
         )
         if self.verbose:
             bpyhelpers.bmesh_print_topological_characteristics(tunnel_bmesh)
 
     def __export_triangulation_basename(self):
-        return os.path.join(
-            self.outputdir, "tunnel_sub_" + str(self.subdivision) + "_triangulation"
-        )
+        filename = "tunnel_sub_" + str(self.subdivision)
+        if self.fill_holes:
+            filename += "_no_boundaries"
+        filename += "_triangulation"
+        return os.path.join(self.outputdir, filename)
 
     def __export_to_ply_files(self):
         """Write the resulting PLY files"""

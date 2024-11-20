@@ -8,6 +8,7 @@ import mathutils
 from argument_parser_helper import common_parser, parse_arguments
 from export_to_ply_files import export_to_ply_files
 from export_to_obj_files import export_to_obj_files
+from fill_holes import fill_holes
 
 
 ########### Globals
@@ -104,7 +105,7 @@ class Cave:
     def __identifiable_boundary_indexes(self, boundaries):
         # Return (a list of) pairs of boundaries that are considered close enough to
         # be identifiable. Each boundary is first identified with the barycenter its
-        # constituting verticies. Barycenters are then "compared".
+        # constituting vertices. Barycenters are then "compared".
         result = list()
         boundaries_barycenters = collections.deque(maxlen=len(boundaries))
         for boundary in boundaries:
@@ -129,27 +130,7 @@ class Cave:
         """Fill in all holes (boundary edge list) with faces"""
         if not self.fill_holes:
             return
-        # Getting UI based operators like bpy.ops.mesh.fill() or
-        # bpy.ops.mesh.grid_fill() are difficult to get working since they
-        # have (implicit and most often und "context" assumptions, that can only
-        # be found by tracking them in the sources (refer e.g. to this post
-        # https://devtalk.blender.org/t/where-can-i-find-infromation-about-the-needed-environment-of-operators/20526/6 )
-        # For example trying to get the following to work (it does run but
-        # doesn't change the topology of the mesh) was a failure.
-        #   bpy.ops.object.mode_set(mode='EDIT')
-        #   my_obj = bpy.data.objects["Cave"]
-        #   my_obj.select_set(True)
-        #   bpy.context.view_layer.objects.active = my_obj
-        #   bpy.ops.mesh.fill()
-        # Hence, we resolve to using the "low" level interface.
-
-        cave_bmesh = bpyhelpers.UI_demote_UI_object_with_mesh_to_bmesh(self.cave)
-        boundaries = bpyhelpers.bmesh_get_boundaries(cave_bmesh)
-        for boundary in boundaries:
-            bmesh.ops.holes_fill(cave_bmesh, edges=boundary, sides=0)
-        # Note: it is KEY to write the bmesh back to the mesh, refer to
-        # https://docs.blender.org/api/current/bmesh.html#example-script
-        cave_bmesh.to_mesh(self.cave.data)
+        fill_holes(self.cave)
 
     def __replicate_to_build_grid(self):
         if self.grid_size_x <= 1 and self.grid_size_y <= 1:
