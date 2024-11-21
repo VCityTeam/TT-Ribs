@@ -5,7 +5,7 @@
 - `Cave_V5_ready_toscript.blend`: first version with every configuration
   already in set in order to minimise the actions that should be realized
   at the python/bpy run time.
-- `Cave_V6.py`:
+- `Cave_V6.blend`:
   - The texture images are now integrated, making the model an autonomous file
     (as opposed to V5 that required two files in the same directory).
   - A wall painting (a group of three hunters) is now integrated in the
@@ -20,7 +20,7 @@
     - the renderer is erroneously set to be `Eevie` (that does not offer a
       `Bake` option)
     - the Tunnel object is not selected: exported PLY files are thus empty.
-- `Cave_V6-1.py`: fixes of `Cave_V6.py` (as opposed to new features)
+- `Cave_V6-1.blend`: fixes of `Cave_V6.blend` (as opposed to new features)
   - the renderer is set to be `Cycles`
   - the Tunnel object is now selected.
 

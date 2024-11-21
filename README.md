@@ -72,6 +72,7 @@ is the only file format supported by Ribs.
 
 #### Requirements
 
+- [Arch](https://en.wikipedia.org/wiki/Instruction_set_architecture): [amd64](https://en.wikipedia.org/wiki/X86-64). Note: this archirecture hard contraint is not due to RIBS per se (that is pure python code), but to its [bpy (blender python)](https://pypi.org/project/bpy/4.0.0/) dependency that [is implicitly arch dependent](https://projects.blender.org/blender/blender/issues/120181).
 - Python > 3.10
 - Blender version > 4.0.2
 
