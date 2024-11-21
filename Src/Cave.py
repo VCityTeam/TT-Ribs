@@ -51,12 +51,6 @@ class Cave:
             default=-25.0,
             type=float,
         )
-        parser.add_argument(
-            "--fill_holes",
-            help="Plug/fill surface boundaries/holes (topological change)",
-            default=False,
-            type=bool,
-        )
         args = parse_arguments(parser)
         self.grid_size_x = args.grid_size_x
         self.grid_size_y = args.grid_size_y

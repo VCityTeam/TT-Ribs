@@ -36,6 +36,11 @@ def common_parser():
         help="Do not export to OBJ files.",
         action="store_true",
     )
+    parser.add_argument(
+        "--fill_holes",
+        help="Plug/fill surface boundaries/holes (topological change)",
+        action="store_true",
+    )
     return parser
 
 

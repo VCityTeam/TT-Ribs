@@ -22,12 +22,6 @@ class Tunnel:
 
     def parse_aguments(self):
         parser = common_parser()
-        parser.add_argument(
-            "--fill_holes",
-            help="Plug/fill surface boundaries/holes (topological change)",
-            default=False,
-            type=bool,
-        )
         args = parse_arguments(parser)
         self.subdivision = args.subdivision
         self.fill_holes = args.fill_holes
