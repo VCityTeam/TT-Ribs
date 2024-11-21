@@ -1,10 +1,8 @@
 import bmesh
 import bpyhelpers
 
-def fill_holes(self, UI_geometry):
+def fill_holes(UI_geometry):
     """Fill in all holes (boundary edge list) with faces"""
-    if not self.fill_holes:
-        return
     # Getting UI based operators like bpy.ops.mesh.fill() or
     # bpy.ops.mesh.grid_fill() are difficult to get working since they
     # have implicit and most often under the hood "context" assumptions, 
