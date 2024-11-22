@@ -10,15 +10,18 @@
   - [Examples of usage](#examples-of-usage)
     - [Installation](#installation)
     - [Usage parameters](#usage-parameters)
-    - [Usage example](#usage-example)
+    - [Cave specific parameters](#cave-specific-parameters)
+    - [Usage examples](#usage-examples)
   - [Interacting through Blender with the resulting geometries](#interacting-through-blender-with-the-resulting-geometries)
-- [The Cave system](#the-cave-system)
+- [Illustrations of resulting Cave systems](#illustrations-of-resulting-cave-systems)
   - [The basic building block](#the-basic-building-block)
   - [Two types of geometrical outputs: triangulation and point cloud](#two-types-of-geometrical-outputs-triangulation-and-point-cloud)
   - [Modeling parameter: varying the stalactites length](#modeling-parameter-varying-the-stalactites-length)
+  - [Inclusion of image](#inclusion-of-image)
   - [Modeling parameter: The effect of the subdivision level on the geometry](#modeling-parameter-the-effect-of-the-subdivision-level-on-the-geometry)
   - [Modeling parameter: composition into a grid system of caves](#modeling-parameter-composition-into-a-grid-system-of-caves)
-- [The tunnel](#the-tunnel)
+- [Illustrations of resulting Tunnel systems](#illustrations-of-resulting-tunnel-systems)
+  - [Dimensions/Sizes of resulting geometries](#dimensionssizes-of-resulting-geometries)
 - [TODO](#todo)
 
 ## Introduction
@@ -94,13 +97,17 @@ pip install -r requirements.txt
 
 #### Usage parameters
 
-The flags and parameter arguments are document by the following command
+The complete flag and parameter arguments are documented by the following commands
 
 ```bash
-python Cave.py -h
+python Cave.py -h     # For the cave system
 ```
 
-As a quick summary of parameters acting on the topology/geometry:
+```bash
+python Tunnel.py -h   # For the tunnel system
+```
+
+As a quick summary of shared (between the `Cave.py` and `Tunnel.py` scripts) and flags/parameters :
 
 - `--subdivision SUBDIVISION`
 
@@ -110,30 +117,46 @@ As a quick summary of parameters acting on the topology/geometry:
   to the triangularisation of the result. This parameter acts on the number
   of produced vertices/triangles.
 
-- `--grid_size_x GRID_SIZE_X` and `--grid_size_y GRID_SIZE_Y`
-
-  The number of replications, along the `X` axis and along the `Y` axis
-  respectively, of the basic cave building block. Those parameter act on the
-  topology (genus and number of boundaries) of the resulting gridified cave
-  system and as such induces a higher number of vertices/triangles.
-
-Other parameters
-
 - `--outputdir OUTPUTDIR`
 
   Target directory for the resulting PLY files.
 
-#### Usage example
+- `--fill_holes`
+
+  By default, the produced surfaces (both Cave and Tunnel systems) have boundaries (their topology is the one of [genus-n surfaces](https://en.wikipedia.org/wiki/Genus_(mathematics)) with [punctures](https://en.wikipedia.org/wiki/Puncture_(topology))). Set the `--fill_holes` flag will plug/fill the holes/boundaries of the resulting surface (that will thus be puncture free).
+
+- `--no-ply-export`
+  
+  Do not export to PLY files. (default: False)
+
+- `--no-obj-export`
+
+  Do not export to OBJ files. (default: False)
+
+#### Cave specific parameters
+
+In opposition to `Tunnel.py`, the `Cave.py` has a set of specific parameters that control its general topology (number of replicates of a basic build block) as well as some geometric features like the height of the stalactites. Here is a brief summary (refer to the output of `python Cave.py -h` for more details):  
+
+- `--grid_size_x GRID_SIZE_X` and `--grid_size_y GRID_SIZE_Y`
+
+  The number of replications along the `X` axis and along the `Y` axis
+  respectively, of the basic cave building block (defaults are `1` meaning no replication). Those parameter act on the topology (genus and number of boundaries) of the resulting "gridified" cave system and as such induces a higher number of vertices/triangles.
+
+- `--stalactite_factor STALACTITE_FACTOR`
+  
+  Vertical extension factor of the stalactites (default: -25.0)
+
+#### Usage examples
 
 ```bash
-python Cave.py -v --subdivision 2 --grid_size_x 2
+python Tunnel.py --subdivision 3 --no-ply-export --fill_holes
 ```
 
 ```bash
-python Cave.py -v --subdivision 2 --grid_size_x 2
+python Cave.py -v --grid_size_x 2 --grid_size_y 3
 ```
 
-Open the resulting file (`cave_*.ply`) e.g. with `https://point.love/`
+The resulting files are of the form `cave_*.ply` or `cave_*.obj` respectively `tunnel_*.ply` or `tunnel_*.obj` and can be visualized with tools like e.g. [`https://point.love/`](point.love).
 
 ### Interacting through Blender with the resulting geometries
 
@@ -164,7 +187,7 @@ blender --python Tunnel.py -- -v --subdivision 2
 > In the above commands mind the additional " -- " argument that is not
 > required when running "outside" of the blender UI.
 
-## The Cave system
+## Illustrations of resulting Cave systems
 
 ### The basic building block
 
@@ -172,7 +195,7 @@ blender --python Tunnel.py -- -v --subdivision 2
 
 ### Two types of geometrical outputs: triangulation and point cloud
 
-Ribs generates
+Ribs generates the following results
 
 <figure>
   <img src="Doc/ScreenShots/cave_sub_1_grid_size_x_1_grid_size_y_1_point_cloud_-_global_view_point_love.png" alt="drawing" width="800"/>
@@ -238,6 +261,16 @@ respectively `0`, `7`, `14` and `21`
   </tr>
 </table>
 
+### Inclusion of image
+
+In order to test how the information conveyed by textured images get degraded from their original version to vertices color within triangulations (of various resolutions) the Cave integrates an image of "primitive wall paintings".
+The following figure gives some clues of what remains available/recognizable for a level of subdivision of 3:
+
+<figure>
+  <img src="Doc/ScreenShots/cave_sub_3_grid_size_x_1_grid_size_y_1_triangulation_-_primitive_wall_painting_point_love.png" alt="drawing" width="800"/>
+  <figcaption>Point.love detail rendering of primitive wall paintings (subdivision=3)</figcaption>
+</figure>
+
 ### Modeling parameter: The effect of the subdivision level on the geometry
 
 <figure>
@@ -281,21 +314,32 @@ Here is an example of a 3x2 grid system of caves rendered with different tools
 
 <figure>
   <img src="Doc/ScreenShots//cave_sub_2_grid_size_x_3_grid_size_y_2_point_cloud_-_mesh_lab.png" alt="drawing" width="800"/>
-  <figcaption>MeshLab renderer on point cloud (subdivision=2, grid_size_x=3, grid_size_y=2)</figcaption>
+  <figcaption>MeshLab rendering of point cloud (subdivision=2, grid_size_x=3, grid_size_y=2)</figcaption>
 </figure>
 
 <figure>
   <img src="Doc/ScreenShots/cave_sub_2_grid_size_x_3_grid_size_y_2_point_cloud_-_point_love.png" alt="drawing" width="800"/>
-  <figcaption>Point.love renderer on point cloud (subdivision=2, grid_size_x=3, grid_size_y=2)</figcaption>
+  <figcaption>Point.love rendering of point cloud (subdivision=2, grid_size_x=3, grid_size_y=2)</figcaption>
 </figure>
 
-## The tunnel
+## Illustrations of resulting Tunnel systems
 
-The flags and parameter arguments are document by the following command
+<figure>
+  <img src="Doc/ScreenShots/tunnel_sub_1_-_global_side_view_point_love.png" alt="drawing" width="800"/>
+  <figcaption>Point.love rendering (side view) of tunnel systems (subdivision=1)</figcaption>
+</figure>
 
-```bash
-python Tunnel.py -h
-```
+<figure>
+  <img src="Doc/ScreenShots/tunnel_sub_1_-_global_above_view_point_love.png" alt="drawing" width="800"/>
+  <figcaption>Point.love rendering (above view) of tunnel systems (subdivision=1)</figcaption>
+</figure>
+
+<figure>
+  <img src="Doc/ScreenShots/tunnel_sub_1_-_global_view_point_love_colored_tunnel_ends.png" alt="drawing" width="800"/>
+  <figcaption>Point.love rendering (perspective view) of tunnel systems (subdivision=1)</figcaption>
+</figure>
+
+### Dimensions/Sizes of resulting geometries
 
 | Subdivisions | # Vertices | #Edges | #Faces | Point Cloud | Triangulation | Time   |
 | ------------ | ---------- | ------ | ------ | ----------- | ------------- | ------ |
