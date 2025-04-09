@@ -60,7 +60,7 @@ class Cave:
         parser.add_argument(
             "--relief",
             help="Level of mid range geometric noise (e.g. 0.7)",
-            default=0.0,
+            default=0.01,   # Defaulting to 0 disables the modifier
             type=float,
         )
         args = parse_arguments(parser)
