@@ -51,12 +51,26 @@ class Cave:
             default=-25.0,
             type=float,
         )
+        parser.add_argument(
+            "--rugosity",
+            help="Level of short range geometric noise (e.g. 0.2)",
+            default=0.0,
+            type=float,
+        )
+        parser.add_argument(
+            "--relief",
+            help="Level of mid range geometric noise (e.g. 0.7)",
+            default=0.01,   # Defaulting to 0 disables the modifier
+            type=float,
+        )
         args = parse_arguments(parser)
         self.grid_size_x = args.grid_size_x
         self.grid_size_y = args.grid_size_y
         self.subdivision = args.subdivision
         self.fill_holes = args.fill_holes
         self.slactatite_stretch_factor = args.stalactite_factor
+        self.rugosity = args.rugosity
+        self.relief = args.relief
         self.outputdir = args.outputdir
         self.verbose = args.verbose
         self.no_ply_export = args.no_ply_export
@@ -85,7 +99,13 @@ class Cave:
             bpy.ops.object.modifier_apply(modifier="Subdivision")
 
             bpy.ops.object.modifier_apply(modifier="Displace.ground")
+
+            relief_geometric_noise = self.cave.modifiers["Displace.walls"]
+            relief_geometric_noise.strength = self.relief
             bpy.ops.object.modifier_apply(modifier="Displace.walls")
+
+            rugosity_geometric_noise = self.cave.modifiers["Displace_structure"]
+            rugosity_geometric_noise.strength = self.rugosity
             bpy.ops.object.modifier_apply(modifier="Displace_structure")
 
             # Note: baking _must_ occur after any modifier that acts on the vertices
