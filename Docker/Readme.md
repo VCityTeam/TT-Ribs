@@ -1,18 +1,19 @@
-# Using the Blender based examples with docker
+# Using the Blender based examples with docker<!-- omit from toc -->
 
+## Table Of Content<!-- omit from toc -->
 <!-- TOC -->
 
 - [Building the docker image](#building-the-docker-image)
   - [Building without cloning](#building-without-cloning)
   - [Building after cloning](#building-after-cloning)
-- [Running the Cave generator](#running-the-cave-generator)
+- [Running the `Cave` generator](#running-the-cave-generator)
   - [Obtaining the usage instructions](#obtaining-the-usage-instructions)
-  - [Retrieving the generated PLY files](#retrieving-the-generated-ply-files)
+  - [Retrieving the generated `PLY` files](#retrieving-the-generated-ply-files)
   - [A short list of working examples](#a-short-list-of-working-examples)
-- [Running the Tunnel generator](#running-the-tunnel-generator)
-  - [Obtaining the usage instructions](#obtaining-the-usage-instructions)
-  - [Retrieving the generated PLY files](#retrieving-the-generated-ply-files)
-  - [A short list of working examples](#a-short-list-of-working-examples)
+- [Running the `Tunnel` generator](#running-the-tunnel-generator)
+  - [Obtaining the usage instructions](#obtaining-the-usage-instructions-1)
+  - [Retrieving the generated `PLY` files](#retrieving-the-generated-ply-files-1)
+  - [A short list of working examples](#a-short-list-of-working-examples-1)
 - [Debugging the container](#debugging-the-container)
 
 <!-- /TOC -->
@@ -43,7 +44,7 @@ From the root folder of the project
 
 ```bash
 git clone https://github.com/VCityTeam/TT-Ribs.git
-cd TunNetGen
+cd TT-Ribs
 docker build -t vcity/ribs Docker
 ```
 
