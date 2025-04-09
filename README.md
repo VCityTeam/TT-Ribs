@@ -125,6 +125,14 @@ As a quick summary of shared (between the `Cave.py` and `Tunnel.py` scripts) and
 
   By default, the produced surfaces (both Cave and Tunnel systems) have boundaries (their topology is the one of [genus-n surfaces](https://en.wikipedia.org/wiki/Genus_(mathematics)) with [punctures](https://en.wikipedia.org/wiki/Puncture_(topology))). Set the `--fill_holes` flag will plug/fill the holes/boundaries of the resulting surface (that will thus be puncture free).
 
+- `--rugosity RUGOSITY`
+  
+  Specify the amplitude of the short range geometric noise added to the vertices positions. This parameter tends to make jaggy surfaces. By default no noise is applied and a value of e.g. `0.2` provides a good clue of the effect of this parameter.
+
+- `--relief RELIEF`
+  
+  Specify the amplitude of the mid range geometric noise added to the vertices positions. This parameter tends to make surfaces will smooth bumps. By default almost no noise is applied (default is `0.01`) and a value of e.g. `0.7` provides a good clue of the effect of this parameter.
+
 - `--no-ply-export`
   
   Do not export to PLY files. (default: False)
@@ -188,6 +196,8 @@ blender --python Tunnel.py -- -v --subdivision 2
 > required when running "outside" of the blender UI.
 
 ## Illustrations of resulting Cave systems
+
+Unless explicitly mentioned, all the following illustrations were computed with `--relief 0.7` and `--rugosity 0.2`.
 
 ### The basic building block
 

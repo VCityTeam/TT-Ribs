@@ -257,6 +257,10 @@ class Cave:
             + str(self.grid_size_x)
             + "_grid_size_y_"
             + str(self.grid_size_y)
+            + "_relief_"
+            + str(self.relief)
+            + "_rugosity_"
+            + str(self.rugosity)
         )
         if self.fill_holes:
             filename += "_no_boundaries"
