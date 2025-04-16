@@ -28,5 +28,7 @@ RUN pip3 install bpy
 # Here starts what specifically concerns RIBS
 RUN git clone https://github.com/VCityTeam/TT-Ribs.git
 WORKDIR TT-Ribs/Src
+RUN git log -1
+RUN chmod a+w /TT-Ribs/Src
 RUN pip3 install git+https://github.com/VCityTeam/bpyhelpers.git@master
 ENTRYPOINT [ "python" ]
