@@ -54,7 +54,7 @@ class Cave:
         parser.add_argument(
             "--rugosity",
             help="Level of short range geometric noise (e.g. 0.2)",
-            default=0.0,
+            default=0.01,
             type=float,
         )
         parser.add_argument(
