@@ -55,7 +55,7 @@ class Tunnel:
             subdiv = self.tunnel.modifiers["Subdivision"]
             subdiv.levels = self.subdivision
             bpy.ops.object.modifier_apply(modifier="Subdivision")
-            relief_geometric_noise = self.cave.modifiers["Displace"]
+            relief_geometric_noise = self.tunnel.modifiers["Displace"]
             relief_geometric_noise.strength = self.relief
             bpy.ops.object.modifier_apply(modifier="Displace")
             ## FIXME: provide a parameter
