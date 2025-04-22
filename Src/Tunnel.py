@@ -30,7 +30,6 @@ class Tunnel:
         )
         args = parse_arguments(parser)
         self.subdivision = args.subdivision
-        self.rugosity = args.rugosity
         self.relief = args.relief
         self.fill_holes = args.fill_holes
         self.outputdir = args.outputdir
