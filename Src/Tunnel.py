@@ -24,7 +24,7 @@ class Tunnel:
         parser = common_parser()
         parser.add_argument(
             "--relief",
-            help="Level of mid range geometric noise (e.g. 0.7)",
+            help="Level of mid range geometric noise (e.g. 1.0)",
             default=0.01,  # Defaulting to 0 (quietly) disables the modifier
             type=float,
         )
@@ -100,6 +100,7 @@ class Tunnel:
         if self.fill_holes:
             filename += "_no_boundaries"
         filename += "_triangulation"
+        filename += "_relief_" + str(self.relief)
         return os.path.join(self.outputdir, filename)
 
     def __export_to_ply_files(self):
