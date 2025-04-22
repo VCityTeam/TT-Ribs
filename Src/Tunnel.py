@@ -22,8 +22,16 @@ class Tunnel:
 
     def parse_aguments(self):
         parser = common_parser()
+        parser.add_argument(
+            "--relief",
+            help="Level of mid range geometric noise (e.g. 0.7)",
+            default=0.01,  # Defaulting to 0 (quietly) disables the modifier
+            type=float,
+        )
         args = parse_arguments(parser)
         self.subdivision = args.subdivision
+        self.rugosity = args.rugosity
+        self.relief = args.relief
         self.fill_holes = args.fill_holes
         self.outputdir = args.outputdir
         self.verbose = args.verbose
@@ -48,6 +56,8 @@ class Tunnel:
             subdiv = self.tunnel.modifiers["Subdivision"]
             subdiv.levels = self.subdivision
             bpy.ops.object.modifier_apply(modifier="Subdivision")
+            relief_geometric_noise = self.cave.modifiers["Displace"]
+            relief_geometric_noise.strength = self.relief
             bpy.ops.object.modifier_apply(modifier="Displace")
             ## FIXME: provide a parameter
             bpy.ops.object.modifier_apply(modifier="Decimate")
